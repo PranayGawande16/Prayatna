@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Threat Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+
+    <h1 class="text-center text-danger">Threat Monitoring Dashboard</h1>
+    {% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {%endif%}
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Threat Type</th>
+                <th>Severity</th>
+                <th>Source IP</th>
+                <th>Timestamp</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <div class="text-start">
+            <a href="{% url 'admin_panel' %}" class="btn btn-primary">Admin Panel</a>
+            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+            
+        </div>
+        
+
+
+
+
+
+        <div class="text-end">
+            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
+       
+        <tbody>
+            {% for threat in threats %}
+            <tr>
+                <td>{{ threat.type }}</td>
+                <td>
+                    <span class="badge 
+                        {% if threat.severity == 'critical' %}bg-danger
+                        {% elif threat.severity == 'high' %}bg-warning
+                        {% elif threat.severity == 'medium' %}bg-primary
+                        {% else %}bg-success
+                        {% endif %}">
+                        {{ threat.severity|capfirst }}
+                    </span>
+                </td>
+            
+                <td>{{ threat.source_ip }}</td>
+                <td>{{ threat.timestamp }}</td>
+                <td>
+                    <a href="{% url 'block_ip' threat.id %}" class="btn btn-danger btn-sm">Block IP</a>
+                    <a href="{% url 'delete_threat' threat.id %}" class="btn btn-warning btn-sm">Remove</a>
+                </td>
+            </tr>
+            {% empty %}
+           
+            <tr>
+                <td colspan="5" class="text-center">No threats detected.</td>
+            </tr>
+            
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function refreshThreats() {
+        $.get("{% url 'fetch_threats' %}", function(data) {
+            $("#threat-table-body").html(data);
+        });
+    }
+
+    setInterval(refreshThreats, 5000); // Refresh every 5 seconds
+</script>
+
+ 
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

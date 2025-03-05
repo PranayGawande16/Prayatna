@@ -1,0 +1,19 @@
+<tbody id="threat-table-body">
+    {% for threat in threats %}
+    <tr>
+        <td>{{ threat.type }}</td>
+        <td>
+            <span class="badge 
+                {% if threat.severity == 'critical' %}bg-danger
+                {% elif threat.severity == 'high' %}bg-warning
+                {% elif threat.severity == 'medium' %}bg-primary
+                {% else %}bg-success
+                {% endif %}">
+                {{ threat.severity|capfirst }}
+            </span>
+        </td>
+        <td>{{ threat.source_ip }}</td>
+        <td>{{ threat.timestamp }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
